@@ -46,7 +46,11 @@ class BlogsController < ApplicationController
   private
 
   def set_blog
+    if current_user
     @blog = Blog.where(id: params[:id], user_id: current_user.id).or(Blog.where(id: params[:id], secret: false)).first!
+    else
+    @blog = Blog.where(id: params[:id], user_id: session[:user_id]).or(Blog.where(id: params[:id], secret: false)).first!
+    end
   end
 
   def set_current_user_blog
