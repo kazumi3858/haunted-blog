@@ -46,11 +46,8 @@ class BlogsController < ApplicationController
   private
 
   def set_blog
-    if current_user
-    @blog = Blog.where(id: params[:id], user_id: current_user.id).or(Blog.where(id: params[:id], secret: false)).first!
-    else
-    @blog = Blog.where(id: params[:id], user_id: session[:user_id]).or(Blog.where(id: params[:id], secret: false)).first!
-    end
+    user_id = current_user ? current_user.id : session[:user_id]
+    @blog = Blog.where(id: params[:id], user_id: user_id).or(Blog.where(id: params[:id], secret: false)).first!
   end
 
   def set_current_user_blog
@@ -58,10 +55,7 @@ class BlogsController < ApplicationController
   end
 
   def blog_params
-    if current_user.premium?
-      params.require(:blog).permit(:title, :content, :secret, :random_eyecatch)
-    else
-      params.require(:blog).permit(:title, :content, :secret)
-    end
+    permitted_params = current_user.premium? ? %i[title content secret random_eyecatch] : %i[title content secret]
+    params.require(:blog).permit(permitted_params)
   end
 end
