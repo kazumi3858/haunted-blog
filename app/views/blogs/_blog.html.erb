@@ -14,7 +14,7 @@
     <% end %>
     <div class="blog-content">
       <p>
-        <%= format_content(blog) %>
+        <%= sanitize format_content(blog), tags: %w(br) %>
       </p>
     </div>
     <% if user_signed_in? && !blog.secret? %>
