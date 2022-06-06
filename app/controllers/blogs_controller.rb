@@ -10,7 +10,8 @@ class BlogsController < ApplicationController
   end
 
   def show
-    set_blog
+    user_id = current_user ? current_user.id : session[:user_id]
+    @blog = Blog.where(id: params[:id]).merge(Blog.where(user_id: user_id).or(Blog.where(secret: false))).first!
   end
 
   def new
@@ -44,11 +45,6 @@ class BlogsController < ApplicationController
   end
 
   private
-
-  def set_blog
-    user_id = current_user ? current_user.id : session[:user_id]
-    @blog = Blog.where(id: params[:id], user_id: user_id).or(Blog.where(id: params[:id], secret: false)).first!
-  end
 
   def set_current_user_blog
     @blog = current_user.blogs.find(params[:id])
